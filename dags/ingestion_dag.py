@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 import os
 import logging
 
-S3_BUCKET = "your-retailpulse-bucket"
-S3_PREFIX = "retailpulse/landing/"
+S3_BUCKET = "meghna.retailpulse.landingzone"
+S3_PREFIX = "raw/"
 LOCAL_DATA_DIR = "/usr/local/airflow/include/data/raw"
 FILES = ["customers.csv", "orders.csv", "events.csv"]
 
