@@ -19,6 +19,24 @@ def define_schema():
     ])
 
 
+def validate_data(df):
+    """Run data quality assertions on the raw data"""
+    
+    # 1. Check for null customer_id
+    null_customer_count = df.filter(F.col("customer_id").isNull()).count()
+    if null_customer_count > 0:
+        raise ValueError(f"Data quality check failed: Found {null_customer_count} rows with null customer_id")
+    
+    # 2. Check is_premium contains only True/False values
+    # Since schema enforces BooleanType, invalid values will be null
+    # Check for any nulls in is_premium that weren't in the original data
+    invalid_premium = df.filter(F.col("is_premium").isNull()).count()
+    if invalid_premium > 0:
+        raise ValueError(f"Incorrect Format detected: Found {invalid_premium} rows with invalid is_premium values (must be True or False)")
+    
+    print("✓ Data quality checks passed")
+
+
 def create_spark_session():
     # Create a SparkSession with:
     # - app name: "retailpulse_transform_customers"
@@ -62,6 +80,9 @@ def main():
     df = spark.read.csv(INPUT_PATH, header=True, schema=schema)
 
     print(f"Raw count: {df.count()}")
+    
+    # Run data quality assertions
+    validate_data(df)
 
     df = transform(df)
 
